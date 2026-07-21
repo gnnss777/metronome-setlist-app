@@ -52,8 +52,6 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, oklch(0.72 0.21 25 / 4%) 0%, transparent 100%),
-    radial-gradient(ellipse 80% 50% at 50% 100%, oklch(0.5 0.1 180 / 3%) 0%, transparent 100%),
     repeating-conic-gradient(var(--bg) 0%, transparent 0.0001%, var(--bg) 0.0002%);
   opacity: 0.5;
 }

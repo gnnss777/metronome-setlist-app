@@ -24,73 +24,51 @@ export function MetronomeApp() {
       : 'sem acentos'
 
   return (
-    <div
-      style={{
-        height: '100dvh',
-        position: 'relative',
-        overflow: 'hidden',
-        paddingTop: 'calc(var(--safe-top, 0px) + 56px)',
-        paddingBottom: 'calc(var(--safe-bottom, 0px) + 12px)',
-        paddingLeft: 'var(--safe-x, 0px)',
-        paddingRight: 'var(--safe-x, 0px)',
-      }}
-    >
-      <header
-        style={{
-          position: 'absolute',
-          top: 'calc(var(--safe-top, 0px) + 12px)',
-          left: 'calc(var(--safe-x, 0px) + 16px)',
-          right: 'calc(var(--safe-x, 0px) + 16px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          zIndex: 10,
-        }}
-      >
-        <button
-          onClick={() => {}}
-          style={{
-            width: 44,
-            height: 44,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-muted)',
-            borderRadius: '50%',
-          }}
-          aria-label="Afinador"
-        >
+    <div style={{
+      minHeight: '100dvh',
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'relative',
+      overflow: 'hidden',
+      paddingTop: 'calc(env(safe-area-inset-top) + 16px)',
+      paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)',
+      paddingLeft: 'env(safe-area-inset-left)',
+      paddingRight: 'env(safe-area-inset-right)',
+    }}>
+
+      {/* 1. BACKGROUND LAYERS (Gradientes e textura) */}
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none',
+        background: `
+          radial-gradient(ellipse 80% 50% at 50% 0%, oklch(0.72 0.21 25 / 6%) 0%, transparent 60%),
+          radial-gradient(ellipse 80% 40% at 50% 100%, oklch(0.5 0.1 180 / 4%) 0%, transparent 60%),
+          var(--bg)
+        `
+      }} />
+
+      {/* 2. HEADER (Afinador e Setlist) */}
+      <header style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '0 20px', height: '48px', flexShrink: 0
+      }}>
+        <button style={{ width: 44, height: 44, color: 'var(--text-muted)', background: 'none', border: 'none' }} aria-label="Afinador">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
-        <button
-          onClick={() => setShowSetlist(true)}
-          style={{
-            width: 44,
-            height: 44,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-muted)',
-            borderRadius: '50%',
-          }}
-          aria-label="Setlist"
-        >
+        <button onClick={() => setShowSetlist(true)} style={{ width: 44, height: 44, color: 'var(--text-muted)', background: 'none', border: 'none' }} aria-label="Setlist">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
         </button>
       </header>
 
-      <main
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '0 24px',
-          position: 'relative',
-          height: '100%',
-        }}
-      >
+      {/* 3. ÁREA CENTRAL (Ring + BPM) */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '20px',
+        padding: '0 20px'
+      }}>
         <BpmDisplay
           bpm={config.bpm}
           isPlaying={isPlaying}
@@ -99,53 +77,48 @@ export function MetronomeApp() {
           accentLabel={accentLabel}
           activeBeat={activeBeat}
         />
+      </div>
 
+      {/* 4. BOTÃO PLAY */}
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '0 0 24px' }}>
         <button
           onClick={toggle}
           style={{
-            width: 96,
-            height: 96,
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 32,
-            background: isPlaying
-              ? 'oklch(0.55 0.2 30)'
-              : 'oklch(0.6 0.2 145)',
-            boxShadow: isPlaying
-              ? '0 0 40px oklch(0.55 0.2 30 / 40%), 0 8px 32px rgba(0,0,0,0.5)'
-              : '0 0 40px oklch(0.6 0.2 145 / 40%), 0 8px 32px rgba(0,0,0,0.5)',
-            transition: 'all 0.3s var(--smooth)',
-            animation: isPlaying ? 'glow-pulse var(--beat-dur, 0.6s) var(--smooth) infinite' : 'none',
+            width: 96, height: 96, borderRadius: '50%',
+            background: 'var(--accent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 0 32px var(--accent-glow)',
+            border: 'none', cursor: 'pointer',
+            transition: 'transform 0.15s var(--smooth)'
           }}
-          aria-label={isPlaying ? 'Parar metrônomo' : 'Iniciar metrônomo'}
+          aria-label={isPlaying ? "Parar" : "Iniciar"}
         >
           {isPlaying ? (
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+            <div style={{ width: 28, height: 28, background: 'var(--text)', borderRadius: '4px' }} />
           ) : (
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="var(--text)"><polygon points="6 4 20 12 6 20 6 4"/></svg>
           )}
         </button>
-      </main>
+      </div>
 
-      <ControlPanel
-        isPlaying={isPlaying}
-        config={config}
-        setBpm={setBpm}
-        setSubdivision={setSubdivision}
-        setPitch={setPitch}
-        setAccentEveryBeat={setAccentEveryBeat}
-        setAccentEveryBar={setAccentEveryBar}
-        setVibrationEnabled={setVibrationEnabled}
-        tapTempo={tapTempo}
-        startSession={startSession}
-        stopSession={stopSession}
-      />
+      {/* 5. PAINEL DE CONTROLES */}
+      <div style={{ padding: '0 16px' }}>
+        <ControlPanel
+          isPlaying={isPlaying}
+          config={config}
+          setBpm={setBpm}
+          setSubdivision={setSubdivision}
+          setPitch={setPitch}
+          setAccentEveryBeat={setAccentEveryBeat}
+          setAccentEveryBar={setAccentEveryBar}
+          setVibrationEnabled={setVibrationEnabled}
+          tapTempo={tapTempo}
+          startSession={startSession}
+          stopSession={stopSession}
+        />
+      </div>
 
-      {showSetlist && (
-        <SetlistPanel onClose={() => setShowSetlist(false)} />
-      )}
+      {showSetlist && <SetlistPanel onClose={() => setShowSetlist(false)} />}
     </div>
   )
 }
