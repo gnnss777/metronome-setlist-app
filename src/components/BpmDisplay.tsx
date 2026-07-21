@@ -13,7 +13,7 @@ interface BpmDisplayProps {
 }
 
 const DOT_COUNT = 8
-const DOT_SIZE = 14
+const DOT_SIZE = 18
 
 const subdivisionIcons: Record<SubdivisionType, string> = {
   none: '♩',
@@ -36,12 +36,12 @@ const subdivisionLabels: Record<SubdivisionType, string> = {
 }
 
 export function BpmDisplay({ bpm, isPlaying, subdivision, pitch, accentLabel, activeBeat = 0 }: BpmDisplayProps) {
-  const [ringSize, setRingSize] = useState(280)
+  const [ringSize, setRingSize] = useState(360)
 
   useEffect(() => {
     const update = () => {
       const vw = window.innerWidth
-      setRingSize(Math.min(Math.max(vw * 0.72, 260), 320))
+      setRingSize(Math.min(Math.max(vw * 0.88, 320), 420))
     }
     update()
     window.addEventListener('resize', update)
@@ -51,7 +51,7 @@ export function BpmDisplay({ bpm, isPlaying, subdivision, pitch, accentLabel, ac
   const dots = useMemo(() => {
     const cx = ringSize / 2
     const cy = ringSize / 2
-    const r = ringSize / 2 - DOT_SIZE - 6
+    const r = ringSize / 2 - DOT_SIZE - 8
     return Array.from({ length: DOT_COUNT }, (_, i) => {
       const angle = (i * 360) / DOT_COUNT - 90
       const rad = (angle * Math.PI) / 180
@@ -63,8 +63,12 @@ export function BpmDisplay({ bpm, isPlaying, subdivision, pitch, accentLabel, ac
     })
   }, [ringSize])
 
+  const bpmFontSize = isPlaying
+    ? 'clamp(6rem, 35vw, 14rem)'
+    : 'clamp(4rem, 25vw, 10rem)'
+
   return (
-    <div className="flex flex-col items-center gap-6 select-none">
+    <div className="flex flex-col items-center gap-4 select-none" style={{ width: '100%' }}>
       <div className="relative" style={{ width: ringSize, height: ringSize }}>
         {dots.map(({ x, y, index }) => (
           <div key={index}>
@@ -85,7 +89,7 @@ export function BpmDisplay({ bpm, isPlaying, subdivision, pitch, accentLabel, ac
                   ? `beat-pulse var(--beat-dur, 0.25s) var(--smooth) forwards`
                   : 'none',
                 boxShadow: isPlaying && index === activeBeat
-                  ? '0 0 16px var(--accent-glow)'
+                  ? '0 0 24px var(--accent-glow)'
                   : 'none',
               }}
             />
@@ -108,28 +112,31 @@ export function BpmDisplay({ bpm, isPlaying, subdivision, pitch, accentLabel, ac
 
         <div
           className="absolute inset-0 flex flex-col items-center justify-center"
-          style={{ marginTop: -6 }}
         >
           <span
-            className="tabular-nums leading-none font-['JetBrains_Mono']"
+            className="tabular-nums leading-none font-['Inter']"
             style={{
-              fontSize: isPlaying ? 'clamp(4rem, 18vw, 8rem)' : 'clamp(3rem, 14vw, 6rem)',
-              fontWeight: isPlaying ? 300 : 200,
+              fontSize: bpmFontSize,
+              fontWeight: isPlaying ? 700 : 300,
               color: isPlaying ? 'var(--text)' : 'var(--text-muted)',
               animation: isPlaying ? `bpm-number-pulse var(--beat-dur, 0.25s) var(--smooth) infinite` : 'none',
-              textShadow: isPlaying ? '0 0 40px var(--accent-glow)' : 'none',
-              transition: 'color 0.3s var(--smooth)',
+              textShadow: isPlaying ? '0 0 60px var(--accent-glow)' : 'none',
+              transition: 'color 0.3s var(--smooth), font-weight 0.3s var(--smooth)',
+              lineHeight: 0.95,
+              letterSpacing: '-0.02em',
             }}
           >
-            {bpm.toFixed(1)}
+            {Math.round(bpm)}
           </span>
           <span
-            className="text-xs tracking-[0.3em] uppercase transition-all duration-300"
+            className="uppercase"
             style={{
+              fontSize: 'clamp(11px, 3vw, 14px)',
+              fontWeight: 600,
               color: isPlaying ? 'var(--accent)' : 'var(--text-muted)',
+              letterSpacing: '0.35em',
               marginTop: 4,
-              letterSpacing: '0.3em',
-              fontSize: 'clamp(10px, 3vw, 13px)',
+              transition: 'color 0.3s var(--smooth)',
             }}
           >
             BPM
@@ -138,21 +145,21 @@ export function BpmDisplay({ bpm, isPlaying, subdivision, pitch, accentLabel, ac
       </div>
 
       <div
-        className="flex items-center gap-2 text-sm transition-opacity duration-300"
-        style={{ color: isPlaying ? 'var(--text-secondary)' : 'var(--text-muted)' }}
+        className="flex items-center gap-3 transition-opacity duration-300"
+        style={{ color: isPlaying ? 'var(--text-secondary)' : 'var(--text-muted)', fontSize: 16 }}
       >
-        <span style={{ fontSize: 20 }}>{subdivisionIcons[subdivision]}</span>
-        <span style={{ fontSize: 14 }}>{subdivisionLabels[subdivision]}</span>
+        <span style={{ fontSize: 22 }}>{subdivisionIcons[subdivision]}</span>
+        <span>{subdivisionLabels[subdivision]}</span>
         {subdivision !== 'none' && (
           <>
             <span style={{ color: 'oklch(0.97 0 0 / 0.1)' }}>·</span>
-            <span style={{ fontSize: 14 }}>{pitch} Hz</span>
+            <span>{pitch} Hz</span>
           </>
         )}
       </div>
 
       {accentLabel !== 'sem acentos' && (
-        <div className="text-xs" style={{ color: 'var(--text-muted)', fontSize: 12 }}>{accentLabel}</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{accentLabel}</div>
       )}
     </div>
   )
