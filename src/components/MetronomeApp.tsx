@@ -85,18 +85,23 @@ export function MetronomeApp() {
           onClick={toggle}
           style={{
             width: 96, height: 96, borderRadius: '50%',
-            background: 'var(--accent)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 32px var(--accent-glow)',
             border: 'none', cursor: 'pointer',
-            transition: 'transform 0.15s var(--smooth)'
+            transition: 'all 0.2s var(--smooth)',
+            background: isPlaying
+              ? 'oklch(0.55 0.2 30)'
+              : 'oklch(0.6 0.2 145)',
+            boxShadow: isPlaying
+              ? '0 0 40px oklch(0.55 0.2 30 / 40%), 0 8px 32px rgba(0,0,0,0.5)'
+              : '0 0 40px oklch(0.6 0.2 145 / 40%), 0 8px 32px rgba(0,0,0,0.5)',
+            animation: isPlaying ? `glow-pulse var(--beat-dur, 0.25s) var(--smooth) infinite` : 'none',
           }}
           aria-label={isPlaying ? "Parar" : "Iniciar"}
         >
           {isPlaying ? (
-            <div style={{ width: 28, height: 28, background: 'var(--text)', borderRadius: '4px' }} />
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
           ) : (
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="var(--text)"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>
           )}
         </button>
       </div>

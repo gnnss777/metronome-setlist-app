@@ -66,7 +66,6 @@ export function useMetronome(): UseMetronomeReturn {
     const ctx = getCtx()
     const sub = SUBDIVISION_MAP[config.subdivision]
     const beatInSub = beat % sub
-    const bar = barRef.current
     const isDownbeat = beatInSub === 0
     const isAccent = config.accentEveryBar
       ? isDownbeat && beat === 0
@@ -101,16 +100,22 @@ export function useMetronome(): UseMetronomeReturn {
     }
   }, [config.subdivision, config.pitch, config.vibrationEnabled, config.accentEveryBeat, config.accentEveryBar, getCtx])
 
+  const scheduleNoteRef = useRef(scheduleNote)
+  scheduleNoteRef.current = scheduleNote
+
   const tick = useCallback(() => {
     const ctx = getCtx()
     const sub = SUBDIVISION_MAP[config.subdivision]
     while (nextTimeRef.current < ctx.currentTime + 0.1) {
-      scheduleNote(beatRef.current, nextTimeRef.current)
+      scheduleNoteRef.current(beatRef.current, nextTimeRef.current)
       nextTimeRef.current += 60.0 / config.bpm / sub
       beatRef.current = (beatRef.current + 1) % (sub * BEATS_PER_BAR)
       if (beatRef.current === 0) barRef.current++
     }
-  }, [config.bpm, config.subdivision, getCtx, scheduleNote])
+  }, [config.bpm, config.subdivision, getCtx])
+
+  const tickRef = useRef(tick)
+  tickRef.current = tick
 
   const toggle = useCallback(() => {
     setIsPlaying(prev => {
@@ -120,7 +125,7 @@ export function useMetronome(): UseMetronomeReturn {
         barRef.current = 0
         notesInQueueRef.current = []
         nextTimeRef.current = ctx.currentTime + 0.05
-        schedulerRef.current = setInterval(tick, 25)
+        schedulerRef.current = setInterval(() => tickRef.current(), 25)
       } else {
         if (schedulerRef.current) {
           clearInterval(schedulerRef.current)
@@ -130,7 +135,7 @@ export function useMetronome(): UseMetronomeReturn {
       }
       return !prev
     })
-  }, [getCtx, tick])
+  }, [getCtx])
 
   useEffect(() => {
     return () => {
@@ -160,7 +165,13 @@ export function useMetronome(): UseMetronomeReturn {
       const ctx = audioCtxRef.current
       if (ctx) {
         const now = ctx.currentTime
-        const last = notesInQueueRef.current.findLast(n => n.time <= now)
+        let last: { beat: number; time: number } | null = null
+        for (let i = notesInQueueRef.current.length - 1; i >= 0; i--) {
+          if (notesInQueueRef.current[i].time <= now) {
+            last = notesInQueueRef.current[i]
+            break
+          }
+        }
         if (last) {
           setActiveBeat(last.beat % 8)
         }
