@@ -35,6 +35,7 @@ export function ControlPanel({
     <div style={{
       borderRadius: 'var(--radius-md)',
       background: 'var(--surface)',
+      border: '1px solid var(--border-subtle)',
       padding: '16px 20px',
       display: 'flex',
       flexDirection: 'column',
