@@ -132,6 +132,10 @@ export function useMetronome(): UseMetronomeReturn {
           schedulerRef.current = null
         }
         notesInQueueRef.current = []
+        if (audioCtxRef.current) {
+          audioCtxRef.current.close()
+          audioCtxRef.current = null
+        }
       }
       return !prev
     })
