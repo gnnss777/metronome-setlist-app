@@ -37,20 +37,20 @@ export function ControlPanel({
         style={{
           borderRadius: 'var(--radius-md)',
           background: 'var(--surface)',
-          padding: '16px 18px',
+          padding: '20px 24px',
           display: 'flex',
           flexDirection: 'column',
-          gap: 14,
+          gap: 20,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 500,
             color: 'var(--text-muted)',
             textTransform: 'uppercase',
             letterSpacing: '0.15em',
-            width: 42,
+            width: 48,
             flexShrink: 0,
           }}>
             BPM
@@ -67,16 +67,17 @@ export function ControlPanel({
           <button
             onClick={tapTempo}
             style={{
-              fontSize: 10,
+              fontSize: 14,
               fontWeight: 500,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
-              padding: '6px 12px',
+              padding: '12px 20px',
               borderRadius: 'var(--radius-sm)',
               background: 'var(--bg)',
               whiteSpace: 'nowrap',
               flexShrink: 0,
+              minHeight: 48,
             }}
             aria-label="Tap tempo"
           >
@@ -87,26 +88,26 @@ export function ControlPanel({
         <div>
           <span style={{
             display: 'block',
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 500,
             color: 'var(--text-muted)',
             textTransform: 'uppercase',
             letterSpacing: '0.15em',
-            marginBottom: 8,
+            marginBottom: 10,
           }}>
             Subdivisão
           </span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="radiogroup" aria-label="Subdivisão">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }} role="radiogroup" aria-label="Subdivisão">
             {SUBDIVISIONS.map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setSubdivision(key)}
                 style={{
-                  height: 34,
-                  minWidth: 36,
-                  padding: '0 10px',
+                  height: 44,
+                  minWidth: 48,
+                  padding: '0 14px',
                   borderRadius: 'var(--radius-sm)',
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: 500,
                   background: config.subdivision === key ? 'var(--accent)' : 'var(--bg)',
                   color: config.subdivision === key ? 'white' : 'var(--text-secondary)',
@@ -125,12 +126,12 @@ export function ControlPanel({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 500,
             color: 'var(--text-muted)',
             textTransform: 'uppercase',
             letterSpacing: '0.15em',
-            width: 42,
+            width: 48,
             flexShrink: 0,
           }}>
             Tom
@@ -145,22 +146,22 @@ export function ControlPanel({
             aria-label="Afinação"
           />
           <span style={{
-            fontSize: 12,
+            fontSize: 14,
             fontFamily: "'JetBrains Mono', monospace",
             color: 'var(--accent)',
             whiteSpace: 'nowrap',
             flexShrink: 0,
-            width: 52,
+            width: 56,
             textAlign: 'right',
           }}>
             {config.pitch} Hz
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', minHeight: 48 }}>
             <span style={{
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: 500,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
@@ -173,9 +174,9 @@ export function ControlPanel({
               aria-checked={config.accentEveryBar}
               onClick={() => setAccentEveryBar(!config.accentEveryBar)}
               style={{
-                width: 32,
-                height: 18,
-                borderRadius: 9,
+                width: 40,
+                height: 22,
+                borderRadius: 11,
                 background: config.accentEveryBar ? 'var(--accent)' : 'var(--bg)',
                 position: 'relative',
                 transition: 'background 0.2s var(--smooth)',
@@ -186,9 +187,9 @@ export function ControlPanel({
                 style={{
                   position: 'absolute',
                   top: 2,
-                  left: config.accentEveryBar ? 16 : 2,
-                  width: 14,
-                  height: 14,
+                  left: config.accentEveryBar ? 20 : 2,
+                  width: 18,
+                  height: 18,
                   borderRadius: '50%',
                   background: 'white',
                   transition: 'left 0.2s var(--smooth)',
@@ -197,9 +198,9 @@ export function ControlPanel({
             </button>
           </label>
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', minHeight: 48 }}>
             <span style={{
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: 500,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
@@ -212,9 +213,9 @@ export function ControlPanel({
               aria-checked={config.vibrationEnabled}
               onClick={() => setVibrationEnabled(!config.vibrationEnabled)}
               style={{
-                width: 32,
-                height: 18,
-                borderRadius: 9,
+                width: 40,
+                height: 22,
+                borderRadius: 11,
                 background: config.vibrationEnabled ? 'var(--accent)' : 'var(--bg)',
                 position: 'relative',
                 transition: 'background 0.2s var(--smooth)',
@@ -225,9 +226,9 @@ export function ControlPanel({
                 style={{
                   position: 'absolute',
                   top: 2,
-                  left: config.vibrationEnabled ? 16 : 2,
-                  width: 14,
-                  height: 14,
+                  left: config.vibrationEnabled ? 20 : 2,
+                  width: 18,
+                  height: 18,
                   borderRadius: '50%',
                   background: 'white',
                   transition: 'left 0.2s var(--smooth)',
@@ -237,14 +238,14 @@ export function ControlPanel({
           </label>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <button
             onClick={startSession}
             style={{
-              height: 36,
+              height: 48,
               borderRadius: 'var(--radius-sm)',
               background: 'var(--bg)',
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: 500,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
@@ -256,10 +257,10 @@ export function ControlPanel({
           <button
             onClick={stopSession}
             style={{
-              height: 36,
+              height: 48,
               borderRadius: 'var(--radius-sm)',
               background: 'var(--bg)',
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: 500,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',

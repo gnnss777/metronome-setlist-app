@@ -6,8 +6,7 @@ import { MetronomeConfig, SubdivisionType } from '@/types'
 interface UseMetronomeReturn {
   config: MetronomeConfig
   isPlaying: boolean
-  beatCount: number
-  barCount: number
+  activeBeat: number
   toggle: () => void
   setBpm: (bpm: number) => void
   setSubdivision: (subdivision: SubdivisionType) => void
@@ -30,8 +29,11 @@ const SUBDIVISION_MAP: Record<SubdivisionType, number> = {
   fifth: 5
 }
 
+const BEATS_PER_BAR = 4
+
 export function useMetronome(): UseMetronomeReturn {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [activeBeat, setActiveBeat] = useState(0)
   const [config, setConfig] = useState<MetronomeConfig>({
     bpm: 120,
     subdivision: 'quarter',
@@ -43,9 +45,10 @@ export function useMetronome(): UseMetronomeReturn {
 
   const audioCtxRef = useRef<AudioContext | null>(null)
   const nextTimeRef = useRef(0)
-  const rafRef = useRef<number | null>(null)
+  const schedulerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const beatRef = useRef(0)
   const barRef = useRef(0)
+  const notesInQueueRef = useRef<{ beat: number; time: number }[]>([])
   const wakeLockRef = useRef<any>(null)
   const tapTimesRef = useRef<number[]>([])
 
@@ -59,13 +62,17 @@ export function useMetronome(): UseMetronomeReturn {
     return audioCtxRef.current
   }, [])
 
-  const scheduleNote = useCallback((time: number) => {
+  const scheduleNote = useCallback((beat: number, time: number) => {
     const ctx = getCtx()
     const sub = SUBDIVISION_MAP[config.subdivision]
-    const beat = beatRef.current
-    const bar = barRef.current
     const beatInSub = beat % sub
-    const isAccent = bar > 0 && (beatInSub === 0 || beatInSub === sub - 1)
+    const bar = barRef.current
+    const isDownbeat = beatInSub === 0
+    const isAccent = config.accentEveryBar
+      ? isDownbeat && beat === 0
+      : config.accentEveryBeat > 0
+        ? beatInSub === 0 || beatInSub === config.accentEveryBeat - 1
+        : false
 
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
@@ -84,24 +91,25 @@ export function useMetronome(): UseMetronomeReturn {
     osc.stop(time + dur)
 
     if (config.vibrationEnabled && navigator.vibrate) {
-      navigator.vibrate(isAccent ? 30 : 10)
+      const delayMs = Math.max(0, (time - ctx.currentTime) * 1000 - 15)
+      setTimeout(() => navigator.vibrate!(isAccent ? 30 : 10), delayMs)
     }
 
-    beatRef.current++
-    if (beatRef.current >= sub) {
-      beatRef.current = 0
-      barRef.current++
+    notesInQueueRef.current.push({ beat, time })
+    if (notesInQueueRef.current.length > 64) {
+      notesInQueueRef.current.shift()
     }
-  }, [config.subdivision, config.pitch, config.vibrationEnabled, getCtx])
+  }, [config.subdivision, config.pitch, config.vibrationEnabled, config.accentEveryBeat, config.accentEveryBar, getCtx])
 
   const tick = useCallback(() => {
     const ctx = getCtx()
+    const sub = SUBDIVISION_MAP[config.subdivision]
     while (nextTimeRef.current < ctx.currentTime + 0.1) {
-      scheduleNote(nextTimeRef.current)
-      const sub = SUBDIVISION_MAP[config.subdivision]
+      scheduleNote(beatRef.current, nextTimeRef.current)
       nextTimeRef.current += 60.0 / config.bpm / sub
+      beatRef.current = (beatRef.current + 1) % (sub * BEATS_PER_BAR)
+      if (beatRef.current === 0) barRef.current++
     }
-    rafRef.current = requestAnimationFrame(tick)
   }, [config.bpm, config.subdivision, getCtx, scheduleNote])
 
   const toggle = useCallback(() => {
@@ -110,11 +118,15 @@ export function useMetronome(): UseMetronomeReturn {
         const ctx = getCtx()
         beatRef.current = 0
         barRef.current = 0
+        notesInQueueRef.current = []
         nextTimeRef.current = ctx.currentTime + 0.05
-        rafRef.current = requestAnimationFrame(tick)
+        schedulerRef.current = setInterval(tick, 25)
       } else {
-        if (rafRef.current) cancelAnimationFrame(rafRef.current)
-        rafRef.current = null
+        if (schedulerRef.current) {
+          clearInterval(schedulerRef.current)
+          schedulerRef.current = null
+        }
+        notesInQueueRef.current = []
       }
       return !prev
     })
@@ -122,7 +134,7 @@ export function useMetronome(): UseMetronomeReturn {
 
   useEffect(() => {
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (schedulerRef.current) clearInterval(schedulerRef.current)
       if (audioCtxRef.current) audioCtxRef.current.close()
     }
   }, [])
@@ -137,6 +149,34 @@ export function useMetronome(): UseMetronomeReturn {
       wakeLockRef.current = null
     }
   }, [isPlaying])
+
+  useEffect(() => {
+    if (!isPlaying) {
+      setActiveBeat(0)
+      return
+    }
+    let rafId: number
+    const loop = () => {
+      const ctx = audioCtxRef.current
+      if (ctx) {
+        const now = ctx.currentTime
+        const last = notesInQueueRef.current.findLast(n => n.time <= now)
+        if (last) {
+          setActiveBeat(last.beat % 8)
+        }
+      }
+      rafId = requestAnimationFrame(loop)
+    }
+    rafId = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(rafId)
+  }, [isPlaying])
+
+  useEffect(() => {
+    const sub = SUBDIVISION_MAP[config.subdivision]
+    const interval = 60000 / config.bpm / sub
+    const beatDur = Math.min(interval * 0.55, 180)
+    document.documentElement.style.setProperty('--beat-dur', `${beatDur}ms`)
+  }, [config.bpm, config.subdivision])
 
   const tapTempo = useCallback(() => {
     const now = Date.now()
@@ -162,16 +202,19 @@ export function useMetronome(): UseMetronomeReturn {
   const setAccentEveryBeat = useCallback((v: number) => setConfig(prev => ({ ...prev, accentEveryBeat: v })), [])
   const setAccentEveryBar = useCallback((v: boolean) => setConfig(prev => ({ ...prev, accentEveryBar: v })), [])
   const setVibrationEnabled = useCallback((v: boolean) => setConfig(prev => ({ ...prev, vibrationEnabled: v })), [])
-  const startSession = useCallback(() => {}, [])
-  const stopSession = useCallback(() => {}, [])
+
+  const startSession = useCallback(() => {
+    setConfig(prev => ({ ...prev }))
+  }, [])
+
+  const stopSession = useCallback(() => {
+    setConfig(prev => ({ ...prev }))
+  }, [])
 
   return {
-    config, isPlaying,
-    beatCount: beatRef.current,
-    barCount: barRef.current,
+    config, isPlaying, activeBeat,
     toggle, setBpm, setSubdivision, setPitch,
     setAccentEveryBeat, setAccentEveryBar, setVibrationEnabled,
-    tapTempo,
-    startSession, stopSession
+    tapTempo, startSession, stopSession
   }
 }

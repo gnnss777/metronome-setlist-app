@@ -7,12 +7,16 @@
   --accent-dim: oklch(0.45 0.12 25);
   --text: oklch(0.97 0 0);
   --text-secondary: oklch(0.6 0 0);
-  --text-muted: oklch(0.35 0 0);
+  --text-muted: oklch(0.55 0 0);
   --border: oklch(0.15 0 0);
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --smooth: cubic-bezier(0.19, 1, 0.22, 1);
+  --beat-dur: 0.25s;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-x: env(safe-area-inset-left, 0px);
 }
 
 * {
@@ -38,6 +42,7 @@ body {
   min-height: 100dvh;
   height: 100dvh;
   position: relative;
+  transition-timing-function: var(--smooth);
 }
 
 body::before {
@@ -83,7 +88,7 @@ body::after {
 
 @keyframes beat-pulse {
   0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.25); opacity: 0.85; }
+  50% { transform: scale(1.3); opacity: 0.85; }
   100% { transform: scale(1); opacity: 1; }
 }
 
@@ -100,7 +105,7 @@ body::after {
 
 @keyframes bpm-number-pulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+  50% { transform: scale(1.025); }
   100% { transform: scale(1); }
 }
 
@@ -112,10 +117,6 @@ body::after {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-* {
-  transition-timing-function: var(--smooth);
 }
 
 button, a, input, select, textarea {
@@ -141,48 +142,48 @@ select:focus-visible {
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  height: 40px;
+  height: 48px;
   background: transparent;
   cursor: pointer;
   width: 100%;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 3px;
+  height: 4px;
   border-radius: 2px;
   background: var(--border);
-  transition: background 0.2s var(--smooth);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 20px var(--accent-glow);
-  margin-top: -7.5px;
-  transition: transform 0.15s var(--smooth);
+  box-shadow: 0 0 18px var(--accent-glow);
+  border: 10px solid transparent;
+  background-clip: padding-box;
+  margin-top: -12px;
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.2);
+  transform: scale(1.15);
 }
 
 input[type="range"]::-moz-range-track {
-  height: 3px;
+  height: 4px;
   border-radius: 2px;
   background: var(--border);
   border: none;
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 20px var(--accent-glow);
+  box-shadow: 0 0 18px var(--accent-glow);
   cursor: pointer;
   border: none;
 }
