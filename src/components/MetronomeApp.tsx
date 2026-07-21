@@ -83,11 +83,11 @@ export function MetronomeApp() {
       </div>
 
       {/* Play button */}
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '0 0 8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '0 0 6px' }}>
         <button
           onClick={toggle}
           style={{
-            width: 112, height: 112, borderRadius: '50%',
+            width: 96, height: 96, borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             border: 'none', cursor: 'pointer',
             transition: 'all 0.2s var(--smooth)',
@@ -95,16 +95,16 @@ export function MetronomeApp() {
               ? 'oklch(0.55 0.2 30)'
               : 'oklch(0.6 0.2 145)',
             boxShadow: isPlaying
-              ? '0 0 60px oklch(0.55 0.2 30 / 50%), 0 12px 48px rgba(0,0,0,0.6)'
-              : '0 0 60px oklch(0.6 0.2 145 / 50%), 0 12px 48px rgba(0,0,0,0.6)',
+              ? '0 0 50px oklch(0.55 0.2 30 / 40%), 0 10px 40px rgba(0,0,0,0.5)'
+              : '0 0 50px oklch(0.6 0.2 145 / 40%), 0 10px 40px rgba(0,0,0,0.5)',
             animation: isPlaying ? `glow-pulse var(--beat-dur, 0.25s) var(--smooth) infinite` : 'none',
           }}
           aria-label={isPlaying ? "Parar" : "Iniciar"}
         >
           {isPlaying ? (
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
           ) : (
-            <svg width="44" height="44" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><polygon points="6,4 20,12 6,20"/></svg>
           )}
         </button>
       </div>
@@ -112,15 +112,15 @@ export function MetronomeApp() {
       {/* Quick controls row */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        gap: 8, padding: '4px 20px 8px', flexShrink: 0,
+        gap: 6, padding: '2px 20px 6px', flexShrink: 0,
       }}>
         <button
           onClick={tapTempo}
           style={{
-            height: 52, padding: '0 20px', borderRadius: 'var(--radius-sm)',
-            background: 'var(--surface)', fontSize: 13, fontWeight: 600,
+            height: 48, padding: '0 18px', borderRadius: 'var(--radius-sm)',
+            background: 'var(--surface)', fontSize: 12, fontWeight: 600,
             color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em',
-            minWidth: 80,
+            minWidth: 72,
           }}
           aria-label="Tap tempo"
         >
@@ -131,8 +131,8 @@ export function MetronomeApp() {
           <button
             onClick={() => setBpm(Math.max(20, config.bpm - 1))}
             style={{
-              width: 52, height: 52, borderRadius: 'var(--radius-sm)',
-              background: 'var(--surface)', fontSize: 20, fontWeight: 500,
+              width: 48, height: 48, borderRadius: 'var(--radius-sm)',
+              background: 'var(--surface)', fontSize: 18, fontWeight: 500,
               color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
             aria-label="Diminuir BPM"
@@ -142,8 +142,8 @@ export function MetronomeApp() {
           <button
             onClick={() => setBpm(Math.min(1000, config.bpm + 1))}
             style={{
-              width: 52, height: 52, borderRadius: 'var(--radius-sm)',
-              background: 'var(--surface)', fontSize: 20, fontWeight: 500,
+              width: 48, height: 48, borderRadius: 'var(--radius-sm)',
+              background: 'var(--surface)', fontSize: 18, fontWeight: 500,
               color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
             aria-label="Aumentar BPM"
@@ -155,15 +155,15 @@ export function MetronomeApp() {
         <button
           onClick={() => setControlsExpanded(!controlsExpanded)}
           style={{
-            width: 52, height: 52, borderRadius: 'var(--radius-sm)',
+            width: 48, height: 48, borderRadius: 'var(--radius-sm)',
             background: controlsExpanded ? 'var(--accent)' : 'var(--surface)',
-            fontSize: 20, fontWeight: 500,
+            fontSize: 18, fontWeight: 500,
             color: controlsExpanded ? 'white' : 'var(--text-muted)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
           aria-label={controlsExpanded ? 'Recolher controles' : 'Expandir controles'}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
           </svg>
         </button>
